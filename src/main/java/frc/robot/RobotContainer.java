@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
@@ -94,7 +95,9 @@ public class RobotContainer {
   private final SingleFireCommandGroup m_singleFireCommand;
   private final ControlShooterCommand m_controlShooterCommand;
 
-  private final XboxController m_driverController = new XboxController(OIConstants.kDriverController);
+  // private final XboxController m_driverController = new XboxController(OIConstants.kDriverController);
+  private final Joystick m_leftDriverController = new Joystick(OIConstants.kLeftDriverController);
+  private final Joystick m_rightDriverController = new Joystick(OIConstants.kRightDriverController);
   private final XboxController m_attachmentsController = new XboxController(OIConstants.kAttachmentsController);
 
   public final GyroProvider m_gyroProvider;
@@ -111,7 +114,7 @@ public class RobotContainer {
   private final AutoRightCommand m_autoRight;
   private final AutoShootCommand m_autoShoot;
   private final AutoDriveForewardCommand m_autoMove;
-  private final RainbowLedCommand m_defaultLedCommand;
+  // private final RainbowLedCommand m_defaultLedCommand;
   private HoldPlaceCommand m_holdPlaceCommand;
   private AimCommand m_AutoAimCommand;
   private ClimberCommand m_climbCommand;
@@ -150,8 +153,8 @@ public class RobotContainer {
     m_controlShooterCommand = new ControlShooterCommand(m_shooterSubsystem);
 
     // Configure the button bindings
-    m_defaultLedCommand = new RainbowLedCommand(m_LEDSubsystem, m_driverController, m_attachmentsController);
-    m_LEDSubsystem.setDefaultCommand(m_defaultLedCommand);
+    // m_defaultLedCommand = new RainbowLedCommand(m_LEDSubsystem, m_driverController, m_attachmentsController);
+    // m_LEDSubsystem.setDefaultCommand(m_defaultLedCommand);
     m_driveTrain.setDefaultCommand(m_teleopDriveCommand); 
     m_shooterSubsystem.setDefaultCommand(m_controlShooterCommand); // This works.
     m_magSubsystem.setDefaultCommand(new RunCommand(() -> m_magSubsystem.controlMagazine(), m_magSubsystem)); // This works.
@@ -185,10 +188,10 @@ public class RobotContainer {
       // Competition controls
       configureDriverControls();
       configureAttachmentControls();
-    } else if (controllerSetupMode == ControllerSetup.SINGLE_CONTROLLER) {
-      // Useful for when only a single controller is available
-      configureDriverControls();
-      configureSingleControllerControls();
+    // } else if (controllerSetupMode == ControllerSetup.SINGLE_CONTROLLER) {
+    //   // Useful for when only a single controller is available
+    //   configureDriverControls();
+    //   configureSingleControllerControls();
     } else if (controllerSetupMode == ControllerSetup.DIAGNOSTIC) {
       // Use this mode to setup manual running of various systems
       configureDiagnosticControls();
@@ -197,55 +200,59 @@ public class RobotContainer {
   }
 
   private void configureDriverControls() {
-    DoubleSupplier leftYJoystick = () -> m_driverController.getY(Hand.kLeft);
-    DoubleSupplier rightJoystick = () -> m_driverController.getX(Hand.kRight);
-    BooleanSupplier driverQuickTurn = () -> m_driverController.getTriggerAxis(Hand.kLeft) > 0;
-    BooleanSupplier driverDivertBalls = () -> m_driverController.getTriggerAxis(Hand.kLeft) > 0.5;
-    m_teleopDriveCommand.setControllerSupplier(leftYJoystick, rightJoystick, driverQuickTurn);
+    // DoubleSupplier leftYJoystick = () -> m_driverController.getY(Hand.kLeft);
+    // DoubleSupplier rightJoystick = () -> m_driverController.getX(Hand.kRight);
+    // BooleanSupplier driverQuickTurn = () -> m_driverController.getTriggerAxis(Hand.kLeft) > 0;
+    // BooleanSupplier driverDivertBalls = () -> m_driverController.getTriggerAxis(Hand.kLeft) > 0.5;
+    // m_teleopDriveCommand.setControllerSupplier(leftYJoystick, rightJoystick, driverQuickTurn);
 
-    new JoystickButton(m_driverController, Button.kBumperLeft.value)
-    .whenPressed(new BumpCommand(m_driveTrain));
-    
-    new JoystickButton(m_driverController, Button.kA.value)
-    .whenHeld(new ClimberReverseCommand(m_climberSubsystem));
-
-    new JoystickButton(m_driverController, Button.kBumperRight.value)
-    .whenPressed(new BumpCommand(m_driveTrain));
-
-    //AutoAim Command
-    //new JoystickButton(m_driverController, Button.kX.value)
-    //.whileHeld(m_AutoAimCommand);
-
-    new JoystickButton(m_driverController, Button.kX.value)
-    .whenPressed(new RunGathererReversedCommand(m_gathererSubsystem))
-    .whenReleased(new GatherCommand(m_gathererSubsystem));
-
-    new JoystickButton(m_driverController, Button.kB.value)
-    .whileHeld(m_holdPlaceCommand);
-
-    
-    new JoystickButton(m_driverController, Button.kBack.value)
-    .whenHeld(m_climbCommand);
-
-    new JoystickButton(m_driverController, Button.kStart.value)
-    .whenPressed(() -> m_climberSubsystem.climberToggle(), m_climberSubsystem);
-
-    m_gathererSubsystem.setTriggerSupplier(driverDivertBalls); // Test this!
-
-  }
-
-  private void configureSingleControllerControls() { // Irrelevant, unused
-
-    new JoystickButton(m_driverController, Button.kBack.value)
-    .toggleWhenPressed(m_gatherCommand);
-
-    new JoystickButton(m_driverController, Button.kY.value)
-    .whenHeld(m_shootCommand);
+    // new JoystickButton(m_driverController, Button.kBumperLeft.value)
+    // .whenPressed(new BumpCommand(m_driveTrain));
     
     // new JoystickButton(m_driverController, Button.kA.value)
-    // .whenHeld(new SingleFireCommandGroup(m_shooterSubsystem, m_magSubsystem, m_gathererSubsystem));
+    // .whenHeld(new ClimberReverseCommand(m_climberSubsystem));
+
+    // new JoystickButton(m_driverController, Button.kBumperRight.value)
+    // .whenPressed(new BumpCommand(m_driveTrain));
+
+    // //AutoAim Command
+    // //new JoystickButton(m_driverController, Button.kX.value)
+    // //.whileHeld(m_AutoAimCommand);
+
+    // new JoystickButton(m_driverController, Button.kX.value)
+    // .whenPressed(new RunGathererReversedCommand(m_gathererSubsystem))
+    // .whenReleased(new GatherCommand(m_gathererSubsystem));
+
+    // new JoystickButton(m_driverController, Button.kB.value)
+    // .whileHeld(m_holdPlaceCommand);
+
+    
+    // new JoystickButton(m_driverController, Button.kBack.value)
+    // .whenHeld(m_climbCommand);
+
+    // new JoystickButton(m_driverController, Button.kStart.value)
+    // .whenPressed(() -> m_climberSubsystem.climberToggle(), m_climberSubsystem);
+
+    // m_gathererSubsystem.setTriggerSupplier(driverDivertBalls); // Test this!
+
+    m_teleopDriveCommand.setControllerSupplier(m_leftDriverController::getY, m_rightDriverController::getY);
 
   }
+
+  // private void configureSingleControllerControls() { // Irrelevant, unused
+
+  //   new JoystickButton(m_driverController, Button.kBack.value)
+  //   .toggleWhenPressed(m_gatherCommand);
+
+  //   new JoystickButton(m_driverController, Button.kY.value)
+  //   .whenHeld(m_shootCommand);
+    
+  //   // new JoystickButton(m_driverController, Button.kA.value)
+  //   // .whenHeld(new SingleFireCommandGroup(m_shooterSubsystem, m_magSubsystem, m_gathererSubsystem));
+
+
+
+  // }
 
   private void configureAttachmentControls()
   {

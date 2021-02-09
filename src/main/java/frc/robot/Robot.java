@@ -55,18 +55,18 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
     table = NetworkTableInstance.getDefault().getTable("GRIP/mycontoursReport");
 
-    UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-    camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
+    // UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+    // camera.setResolution(IMG_WIDTH, IMG_HEIGHT);
 
-    visionThread = new VisionThread(camera, new ThePipeline(), pipeline -> {
-        if (!pipeline.filterContoursOutput().isEmpty()) {
-            Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
-            synchronized (imgLock) {
-                centerX = r.x + (r.width / 2);
-            }
-        }
-    });
-    visionThread.start();
+    // visionThread = new VisionThread(camera, new ThePipeline(), pipeline -> {
+    //     if (!pipeline.filterContoursOutput().isEmpty()) {
+    //         Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
+    //         synchronized (imgLock) {
+    //             centerX = r.x + (r.width / 2);
+    //         }
+    //     }
+    // });
+    // visionThread.start();
 
 
     

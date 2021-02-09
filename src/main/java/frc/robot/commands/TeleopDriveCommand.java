@@ -55,10 +55,11 @@ public class TeleopDriveCommand extends CommandBase {
     addRequirements(subsystem);
   }
 
-  public void setControllerSupplier(DoubleSupplier leftDoubleSupplier, DoubleSupplier rightDoubleSupplier, BooleanSupplier quickTurnSupplier) {
+  // public void setControllerSupplier(DoubleSupplier leftDoubleSupplier, DoubleSupplier rightDoubleSupplier, BooleanSupplier quickTurnSupplier) {
+    public void setControllerSupplier(DoubleSupplier leftDoubleSupplier, DoubleSupplier rightDoubleSupplier) {
     m_leftDoubleSupplier = leftDoubleSupplier;
     m_rightDoubleSupplier = rightDoubleSupplier;
-    m_quickTurnSupplier = quickTurnSupplier;
+    // m_quickTurnSupplier = quickTurnSupplier;
   } 
 
   
@@ -72,12 +73,13 @@ public class TeleopDriveCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double xSpeed = m_leftDoubleSupplier.getAsDouble();
-    double zRotation = m_rightDoubleSupplier.getAsDouble();
-    boolean quickTurn = m_quickTurnSupplier.getAsBoolean();
+    // double xSpeed = m_leftDoubleSupplier.getAsDouble();
+    // double zRotation = m_rightDoubleSupplier.getAsDouble();
+    // boolean quickTurn = m_quickTurnSupplier.getAsBoolean();
     
-    arcadeDrive(xSpeed, zRotation);
+    // arcadeDrive(xSpeed, zRotation);
     //curvatureDrive(xSpeed, zRotation, quickTurn);
+    m_driveTrain.tankDrive(m_leftDoubleSupplier.getAsDouble(), m_rightDoubleSupplier.getAsDouble());
   }
 
   private void curvatureDrive(double xSpeed, double zRotation, boolean isQuickTurn) {
