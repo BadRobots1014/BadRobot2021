@@ -27,6 +27,8 @@ public class TeleopDriveCommand extends CommandBase {
   // Initialize these so that it is not empty.
   private DoubleSupplier m_leftDoubleSupplier = () -> 0.0;
   private DoubleSupplier m_rightDoubleSupplier = () -> 0.0;
+  private BooleanSupplier m_leftSlowSupplier = () -> false;
+  private BooleanSupplier m_rightSlowSupplier = () -> false;
   private BooleanSupplier m_quickTurnSupplier = () -> false;
 
   private final SlewRateLimiter m_speedLimiter = new SlewRateLimiter(5);
@@ -56,9 +58,27 @@ public class TeleopDriveCommand extends CommandBase {
   }
 
   // public void setControllerSupplier(DoubleSupplier leftDoubleSupplier, DoubleSupplier rightDoubleSupplier, BooleanSupplier quickTurnSupplier) {
-    public void setControllerSupplier(DoubleSupplier leftDoubleSupplier, DoubleSupplier rightDoubleSupplier) {
-    m_leftDoubleSupplier = leftDoubleSupplier;
-    m_rightDoubleSupplier = rightDoubleSupplier;
+    public void setControllerSupplier(DoubleSupplier leftDoubleSupplier, DoubleSupplier rightDoubleSupplier, BooleanSupplier leftSlowSupplier, BooleanSupplier rightSlowSupplier) {
+    
+    // TODO: There's definitely a better way to write this
+    m_leftDoubleSupplier = () -> {
+      if (Math.abs(leftDoubleSupplier.getAsDouble()) < DriveConstants.kDeadBand) {
+        return (double) 0;
+      } else {
+        return leftDoubleSupplier.getAsDouble();
+      }
+    };
+
+    m_rightDoubleSupplier = () -> {
+      if (Math.abs(rightDoubleSupplier.getAsDouble()) < DriveConstants.kDeadBand) {
+        return (double) 0;
+      } else {
+        return rightDoubleSupplier.getAsDouble();
+      }
+    };
+
+    m_leftSlowSupplier = leftSlowSupplier;
+    m_rightSlowSupplier = rightSlowSupplier;
     // m_quickTurnSupplier = quickTurnSupplier;
   } 
 
@@ -79,7 +99,15 @@ public class TeleopDriveCommand extends CommandBase {
     
     // arcadeDrive(xSpeed, zRotation);
     //curvatureDrive(xSpeed, zRotation, quickTurn);
-    m_driveTrain.tankDrive(m_leftDoubleSupplier.getAsDouble(), m_rightDoubleSupplier.getAsDouble());
+    if (m_leftSlowSupplier.getAsBoolean() && m_rightSlowSupplier.getAsBoolean()) { 
+      m_driveTrain.tankDrive(-DriveConstants.kSlowFactor*m_leftDoubleSupplier.getAsDouble(), -DriveConstants.kSlowFactor*m_rightDoubleSupplier.getAsDouble());
+    } else if (m_leftSlowSupplier.getAsBoolean()) {
+      m_driveTrain.tankDrive(-DriveConstants.kSlowFactor*m_leftDoubleSupplier.getAsDouble(), -m_rightDoubleSupplier.getAsDouble());
+    } else if (m_rightSlowSupplier.getAsBoolean()) {
+      m_driveTrain.tankDrive(-m_leftDoubleSupplier.getAsDouble(), -DriveConstants.kSlowFactor*m_rightDoubleSupplier.getAsDouble());
+    } else {
+      m_driveTrain.tankDrive(-m_leftDoubleSupplier.getAsDouble(), -m_rightDoubleSupplier.getAsDouble());
+    }
   }
 
   private void curvatureDrive(double xSpeed, double zRotation, boolean isQuickTurn) {

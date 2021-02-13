@@ -235,7 +235,10 @@ public class RobotContainer {
 
     // m_gathererSubsystem.setTriggerSupplier(driverDivertBalls); // Test this!
 
-    m_teleopDriveCommand.setControllerSupplier(m_leftDriverController::getY, m_rightDriverController::getY);
+    BooleanSupplier leftSlowSupplier = () -> new JoystickButton(m_leftDriverController, 1).get();
+    BooleanSupplier rightSlowSupplier = () -> new JoystickButton(m_rightDriverController, 1).get();
+
+    m_teleopDriveCommand.setControllerSupplier(m_leftDriverController::getY, m_rightDriverController::getY, leftSlowSupplier, rightSlowSupplier);
 
   }
 

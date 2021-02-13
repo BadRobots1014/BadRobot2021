@@ -69,6 +69,9 @@ public final class Constants {
         public static final double kTurnRateToleranceDegPerS = 10;//degree per sencond
 
         public static final int kCurrentLimit = 40;
+
+        public static final double kSlowFactor = 0.5;
+        public static final double kDeadBand = 0.05;
     }
 
     public static final class ShooterConstants {
