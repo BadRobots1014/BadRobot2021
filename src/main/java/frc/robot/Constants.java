@@ -17,8 +17,9 @@ package frc.robot;
  */
 public final class Constants {
     public static final class OIConstants {
-        public static final int kDriverController = 0;
-        public static final int kAttachmentsController = 1;
+        public static final int kLeftDriverController = 0;
+        public static final int kRightDriverController = 1;
+        public static final int kAttachmentsController = 2;
         // If in single controller mode, put the controls on each button
         public static enum ControllerSetup {
             SINGLE_CONTROLLER,
@@ -68,6 +69,9 @@ public final class Constants {
         public static final double kTurnRateToleranceDegPerS = 10;//degree per sencond
 
         public static final int kCurrentLimit = 40;
+
+        public static final double kSlowFactor = 0.5;
+        public static final double kDeadBand = 0.05;
     }
 
     public static final class ShooterConstants {

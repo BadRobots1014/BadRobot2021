@@ -96,6 +96,11 @@ public class DriveTrainSubsystem extends SubsystemBase {
     
   }
 
+  public void tankDrive(double left, double right) {
+    // m_differentialDrive.tankDrive(left, right);
+    setSpeeds(left*DriveConstants.kMaxSpeed, right*DriveConstants.kMaxSpeed);
+  }
+
   public void resetEncoders() {
     m_leftEncoder.setPosition(0);
     m_rightEncoder.setPosition(0);
