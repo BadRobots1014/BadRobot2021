@@ -58,9 +58,9 @@ public class TeleopDriveCommand extends CommandBase {
   }
 
   // public void setControllerSupplier(DoubleSupplier leftDoubleSupplier, DoubleSupplier rightDoubleSupplier, BooleanSupplier quickTurnSupplier) {
-    public void setControllerSupplier(DoubleSupplier leftDoubleSupplier, DoubleSupplier rightDoubleSupplier, BooleanSupplier leftSlowSupplier, BooleanSupplier rightSlowSupplier) {
-    
-    // TODO: There's definitely a better way to write this
+  public void setControllerSupplier(DoubleSupplier leftDoubleSupplier, DoubleSupplier rightDoubleSupplier, BooleanSupplier leftSlowSupplier, BooleanSupplier rightSlowSupplier) {
+
+    // TODO: There's probably a better way to write this
     m_leftDoubleSupplier = () -> {
       if (Math.abs(leftDoubleSupplier.getAsDouble()) < DriveConstants.kDeadBand) {
         return (double) 0;
@@ -100,13 +100,13 @@ public class TeleopDriveCommand extends CommandBase {
     // arcadeDrive(xSpeed, zRotation);
     //curvatureDrive(xSpeed, zRotation, quickTurn);
     if (m_leftSlowSupplier.getAsBoolean() && m_rightSlowSupplier.getAsBoolean()) { 
-      m_driveTrain.tankDrive(-DriveConstants.kSlowFactor*m_leftDoubleSupplier.getAsDouble(), -DriveConstants.kSlowFactor*m_rightDoubleSupplier.getAsDouble());
+      m_driveTrain.tankDrive(DriveConstants.kSlowFactor*m_leftDoubleSupplier.getAsDouble(), DriveConstants.kSlowFactor*m_rightDoubleSupplier.getAsDouble());
     } else if (m_leftSlowSupplier.getAsBoolean()) {
-      m_driveTrain.tankDrive(-DriveConstants.kSlowFactor*m_leftDoubleSupplier.getAsDouble(), -m_rightDoubleSupplier.getAsDouble());
+      m_driveTrain.tankDrive(DriveConstants.kSlowFactor*m_leftDoubleSupplier.getAsDouble(), m_rightDoubleSupplier.getAsDouble());
     } else if (m_rightSlowSupplier.getAsBoolean()) {
-      m_driveTrain.tankDrive(-m_leftDoubleSupplier.getAsDouble(), -DriveConstants.kSlowFactor*m_rightDoubleSupplier.getAsDouble());
+      m_driveTrain.tankDrive(m_leftDoubleSupplier.getAsDouble(), DriveConstants.kSlowFactor*m_rightDoubleSupplier.getAsDouble());
     } else {
-      m_driveTrain.tankDrive(-m_leftDoubleSupplier.getAsDouble(), -m_rightDoubleSupplier.getAsDouble());
+      m_driveTrain.tankDrive(m_leftDoubleSupplier.getAsDouble(), m_rightDoubleSupplier.getAsDouble());
     }
   }
 

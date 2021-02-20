@@ -238,7 +238,10 @@ public class RobotContainer {
     BooleanSupplier leftSlowSupplier = () -> new JoystickButton(m_leftDriverController, 1).get();
     BooleanSupplier rightSlowSupplier = () -> new JoystickButton(m_rightDriverController, 1).get();
 
-    m_teleopDriveCommand.setControllerSupplier(m_leftDriverController::getY, m_rightDriverController::getY, leftSlowSupplier, rightSlowSupplier);
+    DoubleSupplier leftSupplier = () -> -m_leftDriverController.getY();
+    DoubleSupplier rightSupplier = () -> -m_rightDriverController.getY();
+
+    m_teleopDriveCommand.setControllerSupplier(leftSupplier, rightSupplier, leftSlowSupplier, rightSlowSupplier);
 
   }
 
