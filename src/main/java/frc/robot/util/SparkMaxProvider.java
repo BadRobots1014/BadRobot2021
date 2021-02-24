@@ -23,6 +23,7 @@ public class SparkMaxProvider {
     public SparkMaxProvider(boolean isReal) {
         m_isReal = isReal;    
     }
+    
     public SpeedController getSpeedController(int deviceId) {
         if (m_isReal) {
             return new CANSparkMax(deviceId, MotorType.kBrushless);

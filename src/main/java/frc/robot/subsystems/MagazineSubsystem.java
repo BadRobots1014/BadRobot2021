@@ -23,27 +23,32 @@ import frc.robot.Constants.MagazineConstants;
 
 public class MagazineSubsystem extends SubsystemBase {
   private final TalonSRX m_magazineMotor;
+
   private final DigitalInput m_inSensor = new DigitalInput(MagazineConstants.kInSensorPort);
   private final DigitalInput m_outSensor = new DigitalInput(MagazineConstants.kOutSensorPort);
+
+  private DoubleSupplier m_joystickSupplier = () -> 0.0;
+  private BooleanSupplier m_triggerSupplier = () -> false;
   
   private final ShuffleboardTab m_shooterTab = Shuffleboard.getTab("Shooting");
 
   private final NetworkTableEntry m_inSensorState = m_shooterTab.add("Magazine input sensor state", true).getEntry();
   private final NetworkTableEntry m_outSensorState = m_shooterTab.add("Magazine output sensor state", true).getEntry();
-  private final NetworkTableEntry m_ballCount = m_shooterTab.add("Magazine ball count", 0).getEntry();
-
-  
-  private DoubleSupplier m_joystickSupplier = () -> 0.0;
-  private BooleanSupplier m_triggerSupplier = () -> false;
   
   /**
    * Creates a new MagazineSubsystem.
+   * @param magMotor The magazine motor object
    */
   public MagazineSubsystem(TalonSRX magMotor) {
     m_magazineMotor = magMotor;
     m_magazineMotor.setInverted(true);
   }
 
+  /**
+   * Creates controller bindings
+   * @param joystickSupplier Supplies the percent output the magazine motor runs at
+   * @param triggerSupplier Supplies the boolean which determines whether or not the value from the joystick is passed
+   */
   public void setJoystickSupplier(DoubleSupplier joystickSupplier, BooleanSupplier triggerSupplier) {
     m_joystickSupplier = joystickSupplier;
     m_triggerSupplier = triggerSupplier;
@@ -111,11 +116,8 @@ public class MagazineSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // updateBallCount();
-    // SmartDashboard.putBoolean("Magazine input sensor output", m_inSensor.get());
     SmartDashboard.putBoolean("Magazine output sensor output", m_outSensor.get());
     m_inSensorState.setBoolean(m_inSensor.get());
     m_outSensorState.setBoolean(m_outSensor.get());
-    // This method will be called once per scheduler run
   }
 }

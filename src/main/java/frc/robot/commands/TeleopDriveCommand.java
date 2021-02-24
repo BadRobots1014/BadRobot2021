@@ -7,15 +7,14 @@
 
 package frc.robot.commands;
 
-import frc.robot.Constants.DriveConstants;
-import frc.robot.subsystems.DriveTrainSubsystem;
-
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpiutil.math.MathUtil;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.subsystems.DriveTrainSubsystem;
 
 /**
  * An example command that uses an example subsystem.
@@ -29,35 +28,33 @@ public class TeleopDriveCommand extends CommandBase {
   private DoubleSupplier m_rightDoubleSupplier = () -> 0.0;
   private BooleanSupplier m_leftSlowSupplier = () -> false;
   private BooleanSupplier m_rightSlowSupplier = () -> false;
-  private BooleanSupplier m_quickTurnSupplier = () -> false;
 
   private final SlewRateLimiter m_speedLimiter = new SlewRateLimiter(5);
   private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(5);
 
+  // Arcade Drive Stuff
   public static final double kDefaultDeadband = 0.02;
   public static final double kDefaultMaxOutput = 1.0;
   private static final boolean kSquareInputs = true; 
 
+  // Curvature Drive Stuff
   public static final double kDefaultQuickStopThreshold = 0.2;
   public static final double kDefaultQuickStopAlpha = 0.1;
   private double m_quickStopThreshold = kDefaultQuickStopThreshold;
   private double m_quickStopAlpha = kDefaultQuickStopAlpha;
   private double m_quickStopAccumulator;
-  private double m_rightSideInvertMultiplier = -1.0;
 
   /**
-   * Creates a new ExampleCommand.
+   * Creates a new TeleopDriveCommand.
    *
-   * @param subsystem The subsystem used by this command.
+   * @param driveTrain The DriveTrainSubsystem used by this command.
    */
-  public TeleopDriveCommand(DriveTrainSubsystem subsystem) {
-    m_driveTrain = subsystem;
+  public TeleopDriveCommand(DriveTrainSubsystem driveTrain) {
+    m_driveTrain = driveTrain;
 
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
+    addRequirements(driveTrain);
   }
 
-  // public void setControllerSupplier(DoubleSupplier leftDoubleSupplier, DoubleSupplier rightDoubleSupplier, BooleanSupplier quickTurnSupplier) {
   public void setControllerSupplier(DoubleSupplier leftDoubleSupplier, DoubleSupplier rightDoubleSupplier, BooleanSupplier leftSlowSupplier, BooleanSupplier rightSlowSupplier) {
 
     // TODO: There's probably a better way to write this
@@ -79,7 +76,6 @@ public class TeleopDriveCommand extends CommandBase {
 
     m_leftSlowSupplier = leftSlowSupplier;
     m_rightSlowSupplier = rightSlowSupplier;
-    // m_quickTurnSupplier = quickTurnSupplier;
   } 
 
   

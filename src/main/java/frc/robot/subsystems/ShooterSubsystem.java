@@ -18,25 +18,23 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.commands.SingleFireCommandGroup;
-import edu.wpi.first.wpilibj.Servo;
 
 
 public class ShooterSubsystem extends SubsystemBase {
-  private final TalonFX m_shooterMotor = new TalonFX(ShooterConstants.kShooterId);
-  private final ShuffleboardTab m_shooterTab = Shuffleboard.getTab("Shooting");
-  private final NetworkTableEntry m_velocityEntry = m_shooterTab.add("Shooter Velocity", 0).getEntry();
-  private final NetworkTableEntry m_currentEntry = m_shooterTab.add("Shooter Current", 0).getEntry();
-  private final NetworkTableEntry m_deltaVelocityEntry = m_shooterTab.add("Delta Velocity", 0).getEntry();
 
-  private final Servo m_servoDawg= new Servo(0);
+  private final TalonFX m_shooterMotor = new TalonFX(ShooterConstants.kShooterId);
+  private final Servo m_servoDawg = new Servo(0);
 
   public final double kDeadband = 0.05;
   private DoubleSupplier m_joystickSupplier = () -> 0.0;
   private BooleanSupplier m_triggerSupplier = () -> false;
+
+  private final ShuffleboardTab m_shooterTab = Shuffleboard.getTab("Shooting");
+  private final NetworkTableEntry m_velocityEntry = m_shooterTab.add("Shooter Velocity", 0).getEntry();
+  private final NetworkTableEntry m_currentEntry = m_shooterTab.add("Shooter Current", 0).getEntry();
+  private final NetworkTableEntry m_deltaVelocityEntry = m_shooterTab.add("Delta Velocity", 0).getEntry();
   
   /**
    * Creates a new ExampleSubsystem.
@@ -49,6 +47,11 @@ public class ShooterSubsystem extends SubsystemBase {
     m_shooterMotor.config_kP(0, ShooterConstants.kP);
   }
 
+  /**
+   * Creates controller bindings
+   * @param joystickSupplier Supplies the percent output the magazine motor runs at
+   * @param triggerSupplier Supplies the boolean which determines whether or not the value from the joystick is passed
+   */
   public void setJoystickSupplier(DoubleSupplier joystickSupplier, BooleanSupplier triggerSupplier) {
     m_joystickSupplier = joystickSupplier;
     m_triggerSupplier = triggerSupplier;
