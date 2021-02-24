@@ -98,7 +98,7 @@ public class RobotContainer {
   // private final XboxController m_driverController = new XboxController(OIConstants.kDriverController);
   private final Joystick m_leftDriverController = new Joystick(OIConstants.kLeftDriverController);
   private final Joystick m_rightDriverController = new Joystick(OIConstants.kRightDriverController);
-  private final XboxController m_attachmentsController = new XboxController(OIConstants.kAttachmentsController);
+  // private final XboxController m_attachmentsController = new XboxController(OIConstants.kAttachmentsController);
 
   public final GyroProvider m_gyroProvider;
   private final SparkMaxProvider m_speedControllerProvider;
@@ -130,6 +130,7 @@ public class RobotContainer {
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+    
     boolean isReal = Robot.isReal();
 
     m_gyroProvider = new GyroProvider(isReal);
@@ -157,7 +158,7 @@ public class RobotContainer {
     // m_LEDSubsystem.setDefaultCommand(m_defaultLedCommand);
     m_driveTrain.setDefaultCommand(m_teleopDriveCommand); 
     m_shooterSubsystem.setDefaultCommand(m_controlShooterCommand); // This works.
-    m_magSubsystem.setDefaultCommand(new RunCommand(() -> m_magSubsystem.controlMagazine(), m_magSubsystem)); // This works.
+    m_magSubsystem.setDefaultCommand(new RunCommand(() -> m_magSubsystem.runAuto(), m_magSubsystem)); // This works.
     m_gathererSubsystem.setDefaultCommand(new GatherCommand(m_gathererSubsystem)); // Janky, might work.
     configureButtonBindings();
     
@@ -187,7 +188,7 @@ public class RobotContainer {
     if (controllerSetupMode == ControllerSetup.COMPETITION) {
       // Competition controls
       configureDriverControls();
-      configureAttachmentControls();
+      // configureAttachmentControls();
     // } else if (controllerSetupMode == ControllerSetup.SINGLE_CONTROLLER) {
     //   // Useful for when only a single controller is available
     //   configureDriverControls();
@@ -260,85 +261,85 @@ public class RobotContainer {
 
   // }
 
-  private void configureAttachmentControls()
-  {
-    // Unjam Gatherer
-    /*
-    new JoystickButton(m_attachmentsController, Button.kB.value)
-    .whenPressed(() -> m_gathererSubsystem.runGatherer())
-    .whenReleased(() -> m_gathererSubsystem.stopGather());
-    */
+  // private void configureAttachmentControls() // Okay boomer.
+  // {
+  //   // Unjam Gatherer
+  //   /*
+  //   new JoystickButton(m_attachmentsController, Button.kB.value)
+  //   .whenPressed(() -> m_gathererSubsystem.runGatherer())
+  //   .whenReleased(() -> m_gathererSubsystem.stopGather());
+  //   */
 
-    new JoystickButton(m_attachmentsController, Button.kA.value)
-    .whenPressed(new RunGathererReversedCommand(m_gathererSubsystem))
-    .whenReleased(new GatherCommand(m_gathererSubsystem)); // This better work.
-    //   () -> {
-    //     if (m_gathererSubsystem.isGathererOut()) {
-    //       m_gathererSubsystem.runGathererReversed();
-    //     }
-    //   }
-    //   )
-    // .whenReleased( // new ConditionalCommand(new RunCommand(() -> m_gathererSubsystem.runGatherer(), m_gathererSubsystem), new InstantCommand(), m_gathererSubsystem::runGathererReversed)
-    //   () -> {
-    //   if (m_gathererSubsystem.isGathererOut()) {
-    //       m_gathererSubsystem.stopGather();
-    //     }
-    //   }
-    // );
+  //   new JoystickButton(m_attachmentsController, Button.kA.value)
+  //   .whenPressed(new RunGathererReversedCommand(m_gathererSubsystem))
+  //   .whenReleased(new GatherCommand(m_gathererSubsystem)); // This better work.
+  //   //   () -> {
+  //   //     if (m_gathererSubsystem.isGathererOut()) {
+  //   //       m_gathererSubsystem.runGathererReversed();
+  //   //     }
+  //   //   }
+  //   //   )
+  //   // .whenReleased( // new ConditionalCommand(new RunCommand(() -> m_gathererSubsystem.runGatherer(), m_gathererSubsystem), new InstantCommand(), m_gathererSubsystem::runGathererReversed)
+  //   //   () -> {
+  //   //   if (m_gathererSubsystem.isGathererOut()) {
+  //   //       m_gathererSubsystem.stopGather();
+  //   //     }
+  //   //   }
+  //   // );
 
 
-    // Run Magazine
-    new JoystickButton(m_attachmentsController, Button.kY.value)
-    .whenHeld(new RunMagazineMotorCommand(m_magSubsystem));
+  //   // Run Magazine
+  //   new JoystickButton(m_attachmentsController, Button.kY.value)
+  //   .whenHeld(new RunMagazineMotorCommand(m_magSubsystem));
 
-    new JoystickButton(m_attachmentsController, Button.kX.value)
-    .whenHeld(new RunMagazineReversedCommand(m_magSubsystem));
+  //   new JoystickButton(m_attachmentsController, Button.kX.value)
+  //   .whenHeld(new RunMagazineReversedCommand(m_magSubsystem));
 
-    new JoystickButton(m_attachmentsController, Button.kB.value)
-    .whenHeld(new ShootContinuousCommand(m_gathererSubsystem, m_magSubsystem, m_shooterSubsystem));
+  //   new JoystickButton(m_attachmentsController, Button.kB.value)
+  //   .whenHeld(new ShootContinuousCommand(m_gathererSubsystem, m_magSubsystem, m_shooterSubsystem));
 
-    // Unjam Shooter
-    DoubleSupplier leftYJoystick = () -> m_attachmentsController.getY(Hand.kLeft);
-    BooleanSupplier leftTrigger = () -> m_attachmentsController.getTriggerAxis(Hand.kLeft) > 0.5;
-    m_magSubsystem.setJoystickSupplier(leftYJoystick, leftTrigger);
+  //   // Unjam Shooter
+  //   DoubleSupplier leftYJoystick = () -> m_attachmentsController.getY(Hand.kLeft);
+  //   BooleanSupplier leftTrigger = () -> m_attachmentsController.getTriggerAxis(Hand.kLeft) > 0.5;
+  //   m_magSubsystem.setJoystickSupplier(leftYJoystick, leftTrigger);
 
-    // Unjam Magazine
-    DoubleSupplier rightYJoystick = () -> m_attachmentsController.getY(Hand.kRight);
-    BooleanSupplier rightTrigger = () -> m_attachmentsController.getTriggerAxis(Hand.kRight) > 0.5;
-    m_shooterSubsystem.setJoystickSupplier(rightYJoystick, rightTrigger);
+  //   // Unjam Magazine
+  //   DoubleSupplier rightYJoystick = () -> m_attachmentsController.getY(Hand.kRight);
+  //   BooleanSupplier rightTrigger = () -> m_attachmentsController.getTriggerAxis(Hand.kRight) > 0.5;
+  //   m_shooterSubsystem.setJoystickSupplier(rightYJoystick, rightTrigger);
 
-    // new JoystickButton(m_attachmentsController, Button.kBumperLeft.value)
-    // .whileHeld(m_singleFireCommand);
-    new JoystickButton(m_attachmentsController, Button.kBumperLeft.value)
-    .whenHeld(new SequentialCommandGroup(new GathererOutCommand(m_gathererSubsystem), new RunShooterCommand(m_shooterSubsystem)));
+  //   // new JoystickButton(m_attachmentsController, Button.kBumperLeft.value)
+  //   // .whileHeld(m_singleFireCommand);
+  //   new JoystickButton(m_attachmentsController, Button.kBumperLeft.value)
+  //   .whenHeld(new SequentialCommandGroup(new GathererOutCommand(m_gathererSubsystem), new RunShooterCommand(m_shooterSubsystem)));
 
-    /*
-    new JoystickButton(m_attachmentsController, Button.kX.value)
-    .whenHeld(new HoodCommand(m_shooterSubsystem));
-    */
-    // .whenReleased(() -> m_climberSubsystem.climberToggle(), m_climberSubsystem);
+  //   /*
+  //   new JoystickButton(m_attachmentsController, Button.kX.value)
+  //   .whenHeld(new HoodCommand(m_shooterSubsystem));
+  //   */
+  //   // .whenReleased(() -> m_climberSubsystem.climberToggle(), m_climberSubsystem);
 
-    /* If you want to use these then change the buttons
-    new JoystickButton(m_attachmentsController, Button.kBumperLeft.value)
-    .whenPressed(() -> m_gathererSubsystem.gathererIn(true))
-    .whenReleased(() -> m_gathererSubsystem.gathererIn(false));
+  //   /* If you want to use these then change the buttons
+  //   new JoystickButton(m_attachmentsController, Button.kBumperLeft.value)
+  //   .whenPressed(() -> m_gathererSubsystem.gathererIn(true))
+  //   .whenReleased(() -> m_gathererSubsystem.gathererIn(false));
 
-    new JoystickButton(m_attachmentsController, Button.kBumperRight.value)
-    .whenPressed(() -> m_gathererSubsystem.gathererOut(true))
-    .whenReleased(() -> m_gathererSubsystem.gathererOut(false));
-    */
+  //   new JoystickButton(m_attachmentsController, Button.kBumperRight.value)
+  //   .whenPressed(() -> m_gathererSubsystem.gathererOut(true))
+  //   .whenReleased(() -> m_gathererSubsystem.gathererOut(false));
+  //   */
 
-    new JoystickButton(m_attachmentsController, Button.kBumperRight.value) // This works--probably.
-    .whenPressed(new ConditionalCommand(new GathererInCommand(m_gathererSubsystem),
-                                        new GathererOutCommand(m_gathererSubsystem),
-                                        m_gathererSubsystem::isGathererOut));
-    //.whenPressed(() -> m_gathererSubsystem.gathererToggle());
+  //   new JoystickButton(m_attachmentsController, Button.kBumperRight.value) // This works--probably.
+  //   .whenPressed(new ConditionalCommand(new GathererInCommand(m_gathererSubsystem),
+  //                                       new GathererOutCommand(m_gathererSubsystem),
+  //                                       m_gathererSubsystem::isGathererOut));
+  //   //.whenPressed(() -> m_gathererSubsystem.gathererToggle());
     
-    /*
-    new JoystickButton(m_attachmentsController, Button.kX.value)
-    .whenPressed(new ExtendShooterHoodCommand(m_shooterSubsystem));
-    */
-  }
+  //   /*
+  //   new JoystickButton(m_attachmentsController, Button.kX.value)
+  //   .whenPressed(new ExtendShooterHoodCommand(m_shooterSubsystem));
+  //   */
+  // }
 
   private void configureDiagnosticControls() {
     // TODO

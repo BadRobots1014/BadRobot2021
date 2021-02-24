@@ -101,8 +101,8 @@ public final class Constants {
     }
 
     public static final class MagazineConstants {
-        public static final int kInSensorPort = 0; // Analog input port
-        public static final int kOutSensorPort = 1; // Analog input port
+        public static final int kInSensorPort = 1;
+        public static final int kOutSensorPort = 0;
         public static final double kMaxSpeed = 0.35;
         public static final double kSensorThreshold = 300;
         public static final double kDelay = 0.2;
