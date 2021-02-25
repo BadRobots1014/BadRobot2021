@@ -25,7 +25,7 @@ import frc.robot.Constants.ShooterConstants;
 public class ShooterSubsystem extends SubsystemBase {
 
   private final TalonFX m_shooterMotor = new TalonFX(ShooterConstants.kShooterId);
-  private final Servo m_servoDawg = new Servo(0);
+  private final Servo m_hoodServo = new Servo(0);
 
   public final double kDeadband = 0.05;
   private DoubleSupplier m_joystickSupplier = () -> 0.0;
@@ -57,12 +57,12 @@ public class ShooterSubsystem extends SubsystemBase {
     m_triggerSupplier = triggerSupplier;
   }
   
-  public void extendServo() {
-    m_servoDawg.setAngle(67);
+  public void extendHood() {
+    m_hoodServo.setAngle(67);
   }
 
-  public void retractServo() {
-    m_servoDawg.setAngle(0);
+  public void retractHood() {
+    m_hoodServo.setAngle(0);
   }
 
   public void runShooter() {
@@ -82,7 +82,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public double getPosition(){
-    return m_servoDawg.getPosition();
+    return m_hoodServo.getPosition();
   }
 
   public void updateEntries() {

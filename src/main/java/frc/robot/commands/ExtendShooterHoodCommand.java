@@ -29,8 +29,8 @@ public class ExtendShooterHoodCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_shooterSubsystem.extendServo();
-    m_shooterSubsystem.retractServo();
+    m_shooterSubsystem.extendHood();
+    m_shooterSubsystem.retractHood();
     end(true);
 
   }
@@ -38,7 +38,7 @@ public class ExtendShooterHoodCommand extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_shooterSubsystem.retractServo();
+    m_shooterSubsystem.retractHood();
   }
 
   // Returns true when the command should end.

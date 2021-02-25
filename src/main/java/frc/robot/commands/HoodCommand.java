@@ -31,14 +31,14 @@ public class HoodCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute(){
-    m_shootSubsystem.extendServo();
+    m_shootSubsystem.extendHood();
     m_isFinished = true;
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_shootSubsystem.retractServo();
+    m_shootSubsystem.retractHood();
   }
 
   // Returns true when the command should end.
