@@ -10,12 +10,12 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.MagazineSubsystem;
 
-public class RunMagazineMotorCommand extends CommandBase {
+public class RunMagazineCommand extends CommandBase {
   private final MagazineSubsystem m_magSubsystem;
   /**
    * Creates a new RunMagazineMotorCommand.
    */
-  public RunMagazineMotorCommand(MagazineSubsystem magSubsystem) {
+  public RunMagazineCommand(MagazineSubsystem magSubsystem) {
     m_magSubsystem = magSubsystem;
 
     // Use addRequirements() here to declare subsystem dependencies.

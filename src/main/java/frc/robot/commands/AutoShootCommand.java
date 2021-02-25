@@ -27,7 +27,7 @@ public class AutoShootCommand extends SequentialCommandGroup {
   public AutoShootCommand(DriveTrainSubsystem m_drive, ShooterSubsystem m_shooter, MagazineSubsystem m_magazine, GathererSubsystem m_gatherer) {    
     //m_lights = lights;
     // Before starting, set the pose to 0, -3, because that's where the path starts in the Example that was created.
-    addCommands(new GathererOutCommand(m_gatherer),
+    addCommands(new ExtendGathererCommand(m_gatherer),
                 new ShootContinuousForTimeCommand(m_gatherer, m_magazine, m_shooter, ShooterConstants.kShootThreeBallsTime), // If single fire knows how to chill, copy-paste this line
                 // RamseteUtil.getRamseteCommandForPath("paths/Example.wpilib.json", driveTrain)
                 // .andThen(() -> driveTrain.stop()),

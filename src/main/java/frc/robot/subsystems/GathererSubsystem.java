@@ -24,10 +24,7 @@ public class GathererSubsystem extends SubsystemBase {
   private final TalonSRX m_gatherer;
 
   private BooleanSupplier m_driverTrigger = () -> false;
-
-  /**
-   * Creates a new ExampleSubsystem.
-   */
+  
   public GathererSubsystem(TalonSRX talon) {
     m_gatherer = talon;
     m_gatherer.setInverted(true);
@@ -45,12 +42,10 @@ public class GathererSubsystem extends SubsystemBase {
   }
 
   public void gathererOut() {
-    System.out.println("Gather out");
     m_doubleSolenoid.set(Value.kReverse);
   }
 
   public void gathererIn() {
-    System.out.println("Gather in");
     m_doubleSolenoid.set(Value.kForward);
   }
 

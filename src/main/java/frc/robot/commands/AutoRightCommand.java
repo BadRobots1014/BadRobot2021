@@ -39,7 +39,7 @@ public class AutoRightCommand extends SequentialCommandGroup {
                 RamseteUtil.getRamseteCommandForPath("paths/RedToLeft.wpilib.json", driveTrain)
                 .andThen(() -> driveTrain.stop()),
                 RamseteUtil.getRamseteCommandForPath("paths/RedLeftCollect.wpilib.json", driveTrain)
-                .raceWith(new GatherCommand(gatherer))
+                .raceWith(new RunGathererCommand(gatherer))
                 .andThen(() -> driveTrain.stop())
                 .andThen(() -> gatherer.stopGather())
     );

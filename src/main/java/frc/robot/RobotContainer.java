@@ -35,7 +35,7 @@ import frc.robot.commands.AutoRightCommand;
 import frc.robot.commands.AutoShootCommand;
 import frc.robot.commands.ClimberCommand;
 import frc.robot.commands.ControlShooterCommand;
-import frc.robot.commands.GatherCommand;
+import frc.robot.commands.RunGathererCommand;
 import frc.robot.commands.HoldPlaceCommand;
 import frc.robot.commands.RunShooterCommand;
 import frc.robot.commands.SingleFireCommandGroup;
@@ -68,7 +68,7 @@ public class RobotContainer {
 
   // Commands
   private final TeleopDriveCommand m_teleopDriveCommand;
-  private final GatherCommand m_gatherCommand;
+  private final RunGathererCommand m_gatherCommand;
   private final RunShooterCommand m_shootCommand;
   private final SingleFireCommandGroup m_singleFireCommand;
   private final ControlShooterCommand m_controlShooterCommand;
@@ -121,7 +121,7 @@ public class RobotContainer {
     m_autoShoot = new AutoShootCommand(m_driveTrain, m_shooterSubsystem, m_magSubsystem, m_gathererSubsystem);
     m_autoMove = new AutoDriveForewardCommand(m_driveTrain, m_shooterSubsystem, m_magSubsystem, m_gathererSubsystem);
     m_teleopDriveCommand = new TeleopDriveCommand(m_driveTrain);
-    m_gatherCommand = new GatherCommand(m_gathererSubsystem);
+    m_gatherCommand = new RunGathererCommand(m_gathererSubsystem);
     m_holdPlaceCommand = new HoldPlaceCommand(m_driveTrain, m_gyroProvider);
     m_shootCommand = new RunShooterCommand(m_shooterSubsystem);
     m_climbCommand = new ClimberCommand(m_climberSubsystem);
@@ -135,7 +135,7 @@ public class RobotContainer {
     m_driveTrain.setDefaultCommand(m_teleopDriveCommand); 
     m_shooterSubsystem.setDefaultCommand(m_controlShooterCommand);
     m_magSubsystem.setDefaultCommand(new RunCommand(() -> m_magSubsystem.runAuto(), m_magSubsystem));
-    m_gathererSubsystem.setDefaultCommand(new GatherCommand(m_gathererSubsystem));
+    m_gathererSubsystem.setDefaultCommand(new RunGathererCommand(m_gathererSubsystem));
 
     // Configure Button Bindings
     configureButtonBindings();

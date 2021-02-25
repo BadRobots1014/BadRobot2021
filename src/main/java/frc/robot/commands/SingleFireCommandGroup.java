@@ -47,7 +47,7 @@ public class SingleFireCommandGroup extends ParallelDeadlineGroup {
         }),
         new ParallelDeadlineGroup(
           new WaitUntilCommand(() -> { return shooterSubsystem.getDeltaDesiredVelocity() <= ShooterConstants.kShootThresholdAngularSpeedDelta; }),//.withTimeout(6.0)
-          new RunMagazineMotorCommand(magSubsystem).withTimeout(1.0)
+          new RunMagazineCommand(magSubsystem).withTimeout(1.0)
           // new SequentialCommandGroup(
           //   new WaitCommand(2.0),)
           //   new ParallelRaceGroup(
@@ -60,7 +60,7 @@ public class SingleFireCommandGroup extends ParallelDeadlineGroup {
         // new WaitCommand(0.5) // Do we need this or can it do without?
       ),
       new SequentialCommandGroup( // Make sequential: cannot use a subsystem in two places at once
-        new GathererOutCommand(gathererSubsystem),
+        new ExtendGathererCommand(gathererSubsystem),
         new RunCommand(gathererSubsystem::stopGather, gathererSubsystem) // IF this doesn't override the default command...
       ),
       new RunCommand(shooterSubsystem::runShooter, shooterSubsystem)

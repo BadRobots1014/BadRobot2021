@@ -25,11 +25,11 @@ public class ShootContinuousCommand extends SequentialCommandGroup {
    */
   public ShootContinuousCommand(GathererSubsystem gatherer, MagazineSubsystem mag, ShooterSubsystem shooter) {
     super(
-      new GathererOutCommand(gatherer),
+      new ExtendGathererCommand(gatherer),
       new ParallelCommandGroup(
         new SequentialCommandGroup(
           new WaitCommand(ShooterConstants.kContinuousShootSpinUpTime),
-          new RunMagazineMotorCommand(mag)
+          new RunMagazineCommand(mag)
         ),
         new RunCommand(gatherer::stopGather, gatherer),
         new RunShooterCommand(shooter)

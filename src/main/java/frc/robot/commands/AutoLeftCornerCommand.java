@@ -36,10 +36,10 @@ public class AutoLeftCornerCommand extends SequentialCommandGroup {
                 .andThen(() -> shooter.stopShooter()),
                 //The angle should be tested
                 new TurnCommand(driveTrain, gyro, 155)
-                .andThen(new GathererOutCommand(gatherer))
+                .andThen(new ExtendGathererCommand(gatherer))
                 .andThen(() -> driveTrain.stop()), 
                 RamseteUtil.getRamseteCommandForPath("paths/RedLeftCollect.wpilib.json", driveTrain)
-                .raceWith(new GatherCommand(gatherer))
+                .raceWith(new RunGathererCommand(gatherer))
                 .beforeStarting(() -> driveTrain.setPose(new Pose2d(2.912, -0.692, new Rotation2d(0))))
                 .andThen(() -> driveTrain.stop())
                 .andThen(() -> gatherer.stopGather()),

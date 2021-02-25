@@ -26,7 +26,7 @@ public class ShootContinuousForTimeCommand extends SequentialCommandGroup {
    */
   public ShootContinuousForTimeCommand(GathererSubsystem gatherer, MagazineSubsystem mag, ShooterSubsystem shooter, double time) {
     super(
-      new GathererOutCommand(gatherer),
+      new ExtendGathererCommand(gatherer),
       new ParallelDeadlineGroup(
         new WaitCommand(time),
         new SequentialCommandGroup(

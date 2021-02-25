@@ -32,11 +32,11 @@ public class AutoLeftCommand extends SequentialCommandGroup {
     //m_lights = lights;
     // Before starting, set the pose to 0, -3, because that's where the path starts in the Example that was created.
     addCommands(new ShootContinuousForTimeCommand(gatherer, magazine, shooter, ShooterConstants.kShootThreeBallsTime)
-                .andThen(new GathererOutCommand(gatherer))
+                .andThen(new ExtendGathererCommand(gatherer))
                 .andThen(() -> driveTrain.stop()), 
                 RamseteUtil.getRamseteCommandForPath("paths/RedMiddleCollect.wpilib.json", driveTrain)
                 .beforeStarting(() -> driveTrain.setPose(new Pose2d(3.019, -2.5, new Rotation2d(0))))
-                .raceWith(new GatherCommand(gatherer))
+                .raceWith(new RunGathererCommand(gatherer))
                 .andThen(() -> driveTrain.stop())
                 .andThen(() -> gatherer.stopGather()),
                 new ShootContinuousForTimeCommand(gatherer, magazine, shooter, ShooterConstants.kShootThreeBallsTime)

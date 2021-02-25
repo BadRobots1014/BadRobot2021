@@ -10,37 +10,45 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.GathererSubsystem;
 
-public class GatherCommand extends CommandBase {
-  private final GathererSubsystem m_gatherer;  
+// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
+// information, see:
+// https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
+public class ExtendGathererCommand extends CommandBase {
+  private final GathererSubsystem m_gatherer;
   /**
-   * Creates a new GatherCommand.
+   * Creates a new GathererOutCommand.
    */
-  public GatherCommand(GathererSubsystem subsystem) {
-    m_gatherer = subsystem;
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
+  public ExtendGathererCommand(GathererSubsystem gatherer) {
+    m_gatherer = gatherer;
+    // Add your commands in the super() call, e.g.
+    // super(new FooCommand(), new BarCommand());
+    // super(
+    //   new InstantCommand(() -> gatherer.gathererOut(), gatherer),
+    //   new RunCommand(() -> gatherer.runGatherer(), gatherer)
+    // );
+    addRequirements(gatherer);
   }
 
-  // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-  }
-
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
+    m_gatherer.gathererOut();
     m_gatherer.runGatherer();
   }
 
-  // Called once the command ends or is interrupted.
+  @Override
+  public void execute() {
+
+  }
+
   @Override
   public void end(boolean interrupted) {
     m_gatherer.stopGather();
   }
 
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }
+
+
