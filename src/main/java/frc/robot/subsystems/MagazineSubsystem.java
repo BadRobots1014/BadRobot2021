@@ -20,20 +20,29 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.MagazineConstants;
+import frc.robot.Constants.MagazineConstants.MagazineState;
 
 public class MagazineSubsystem extends SubsystemBase {
   private final TalonSRX m_magazineMotor;
 
   private final DigitalInput m_inSensor = new DigitalInput(MagazineConstants.kInSensorPort);
   private final DigitalInput m_outSensor = new DigitalInput(MagazineConstants.kOutSensorPort);
+  private boolean m_lastInSensorState = false;
+  private boolean m_lastOutSensorState = false;
+
+  private int m_ballCount = 0; // deal with choosing later
 
   private DoubleSupplier m_joystickSupplier = () -> 0.0;
   private BooleanSupplier m_triggerSupplier = () -> false;
+
+  private MagazineState m_currentState;
   
   private final ShuffleboardTab m_shooterTab = Shuffleboard.getTab("Shooting");
 
   private final NetworkTableEntry m_inSensorState = m_shooterTab.add("Magazine input sensor state", true).getEntry();
   private final NetworkTableEntry m_outSensorState = m_shooterTab.add("Magazine output sensor state", true).getEntry();
+
+  private final NetworkTableEntry m_ballCountEntry = m_shooterTab.add("Ball count", 0).getEntry();
   
   /**
    * Creates a new MagazineSubsystem.
@@ -75,11 +84,33 @@ public class MagazineSubsystem extends SubsystemBase {
   }
 
   public void runAuto() {
-    if (!m_outSensor.get()) {
-      runMotor();
-    } else {
-      stopMotor();
+    boolean currentInSensorState = m_inSensor.get();
+    boolean currentOutSensorState = m_outSensor.get();
+
+    switch (m_currentState) {
+      case EMPTY:
+        if (!m_lastInSensorState && currentInSensorState) {
+          m_currentState = MagazineState.LOAD;
+        }
+        break;
+      case LOAD:
+        if (!m_lastOutSensorState && currentOutSensorState) {
+          m_currentState = MagazineState.FULL;
+        } else if (m_lastInSensorState && !currentInSensorState) {
+          m_currentState = MagazineState.LOADED;
+        }
+        runMotor();
+        break;
+      case LOADED:
+        stopMotor();
+        m_currentState = MagazineState.READY;
+        break;
+      // case READY:
+      default:
+
+        break;
     }
+        
   }
 
   // private boolean getInSensorState() { // true is unobstructed
@@ -116,7 +147,7 @@ public class MagazineSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putBoolean("Magazine output sensor output", m_outSensor.get());
+    // SmartDashboard.putBoolean("Magazine output sensor output", m_outSensor.get());
     m_inSensorState.setBoolean(m_inSensor.get());
     m_outSensorState.setBoolean(m_outSensor.get());
   }

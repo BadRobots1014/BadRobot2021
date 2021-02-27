@@ -106,6 +106,14 @@ public final class Constants {
         public static final double kMaxSpeed = 0.35;
         public static final double kSensorThreshold = 300;
         public static final double kDelay = 0.2;
+        public static enum MagazineState {
+            EMPTY,
+            LOAD,
+            LOADED,
+            FULL,
+            READY,
+            SHOOT
+        }
     }
 
     public static final class AutoConstants{
