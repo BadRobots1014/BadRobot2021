@@ -8,14 +8,14 @@
 package frc.robot.subsystems;
 
 import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -27,22 +27,31 @@ public class MagazineSubsystem extends SubsystemBase {
 
   private final DigitalInput m_inSensor = new DigitalInput(MagazineConstants.kInSensorPort);
   private final DigitalInput m_outSensor = new DigitalInput(MagazineConstants.kOutSensorPort);
+
   private boolean m_lastInSensorState = false;
   private boolean m_lastOutSensorState = false;
+  private boolean m_lastShootTriggerState = false;
+  private boolean m_lastReadyTriggerState = false;
 
-  private int m_ballCount = 0; // deal with choosing later
+  private final Timer m_shootingTimer = new Timer();
 
-  private DoubleSupplier m_joystickSupplier = () -> 0.0;
-  private BooleanSupplier m_triggerSupplier = () -> false;
+  private BooleanSupplier m_shootTriggerSupplier = () -> false;
+  private BooleanSupplier m_readyTriggerSupplier = () -> false;
 
-  private MagazineState m_currentState;
+  private MagazineState m_currentState = MagazineState.EMPTY;
   
   private final ShuffleboardTab m_shooterTab = Shuffleboard.getTab("Shooting");
+
+  private final NetworkTableEntry m_currentStateEntry = m_shooterTab.add("Magazine state", "").getEntry();
 
   private final NetworkTableEntry m_inSensorState = m_shooterTab.add("Magazine input sensor state", true).getEntry();
   private final NetworkTableEntry m_outSensorState = m_shooterTab.add("Magazine output sensor state", true).getEntry();
 
-  private final NetworkTableEntry m_ballCountEntry = m_shooterTab.add("Ball count", 0).getEntry();
+  private final NetworkTableEntry m_ballCountEntry = m_shooterTab.add("Magazine ball count", 0)
+                                                                 .withWidget(BuiltInWidgets.kTextView)
+                                                                 .getEntry();
+
+  private final int kShootCycleResetTimeout = 10;
   
   /**
    * Creates a new MagazineSubsystem.
@@ -55,20 +64,12 @@ public class MagazineSubsystem extends SubsystemBase {
 
   /**
    * Creates controller bindings
-   * @param joystickSupplier Supplies the percent output the magazine motor runs at
-   * @param triggerSupplier Supplies the boolean which determines whether or not the value from the joystick is passed
+   * @param shootTriggerSupplier Supplies the state of the shoot button
+   * @param readyTriggerSupplier Supplies the state of the button to switch between ready/gather states
    */
-  public void setJoystickSupplier(DoubleSupplier joystickSupplier, BooleanSupplier triggerSupplier) {
-    m_joystickSupplier = joystickSupplier;
-    m_triggerSupplier = triggerSupplier;
-  }
-
-  public void controlMagazine() {
-    if (m_triggerSupplier.getAsBoolean()) {
-      m_magazineMotor.set(ControlMode.PercentOutput, m_joystickSupplier.getAsDouble());
-    } else {
-      m_magazineMotor.set(ControlMode.PercentOutput, 0);
-    }
+  public void setJoystickSupplier(BooleanSupplier shootTriggerSupplier, BooleanSupplier readyTriggerSupplier) {
+    m_shootTriggerSupplier = shootTriggerSupplier;
+    m_readyTriggerSupplier = readyTriggerSupplier;
   }
 
   public void runMotor() {
@@ -86,68 +87,77 @@ public class MagazineSubsystem extends SubsystemBase {
   public void runAuto() {
     boolean currentInSensorState = m_inSensor.get();
     boolean currentOutSensorState = m_outSensor.get();
+    boolean currentShootTriggerState = m_shootTriggerSupplier.getAsBoolean();
+    boolean currentReadyTriggerState = m_readyTriggerSupplier.getAsBoolean();
 
     switch (m_currentState) {
       case EMPTY:
+        stopMotor();
         if (!m_lastInSensorState && currentInSensorState) {
           m_currentState = MagazineState.LOAD;
         }
         break;
       case LOAD:
-        if (!m_lastOutSensorState && currentOutSensorState) {
+        runMotor();
+        if (!m_lastReadyTriggerState && currentReadyTriggerState) {
+          m_currentState = MagazineState.READY;
+        } else if (!m_lastOutSensorState && currentOutSensorState) {
           m_currentState = MagazineState.FULL;
         } else if (m_lastInSensorState && !currentInSensorState) {
+          m_ballCountEntry.setNumber(m_ballCountEntry.getNumber(0).intValue() + 1);
           m_currentState = MagazineState.LOADED;
         }
-        runMotor();
         break;
       case LOADED:
         stopMotor();
+        if (!m_lastReadyTriggerState && currentReadyTriggerState) {
+          m_currentState = MagazineState.READY;
+        } else if (!m_lastOutSensorState && currentOutSensorState) {
+          m_currentState = MagazineState.FULL;
+        } else if (!m_lastInSensorState && currentInSensorState) {
+          m_currentState = MagazineState.LOAD;
+        }
+        break;
+      case FULL:
+        stopMotor();
         m_currentState = MagazineState.READY;
         break;
-      // case READY:
-      default:
-
+      case READY:
+        stopMotor();
+        if (!m_lastShootTriggerState && currentShootTriggerState) {
+          m_shootingTimer.reset();
+          m_shootingTimer.start();
+          m_currentState = MagazineState.SHOOT;
+        } else if (!m_lastReadyTriggerState && currentReadyTriggerState) {
+          m_currentState = MagazineState.LOAD;
+        }
+        break;
+      case SHOOT:
+        runMotor();
+        if (m_lastOutSensorState && !currentOutSensorState) {
+          m_ballCountEntry.setNumber(m_ballCountEntry.getNumber(0).intValue() - 1);
+        }
+        if (m_lastShootTriggerState && !currentShootTriggerState) {
+          m_shootingTimer.stop();
+          if (m_shootingTimer.hasElapsed(kShootCycleResetTimeout)) {
+            m_currentState = MagazineState.EMPTY;
+          } else {
+            m_currentState = MagazineState.READY;
+          }
+        }
         break;
     }
+
+    m_lastInSensorState = currentInSensorState;
+    m_lastOutSensorState = currentOutSensorState;
+    m_lastShootTriggerState = currentShootTriggerState;
+    m_lastReadyTriggerState = currentReadyTriggerState;
         
   }
 
-  // private boolean getInSensorState() { // true is unobstructed
-  //   if (m_inSensor.getValue() > MagazineConstants.kSensorThreshold) {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }
-
-  // private boolean getOutSensorState() { // true is unobstructed
-  //   if (m_outSensor.getValue() > MagazineConstants.kSensorThreshold) {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }
-
-  // private void updateBallCount() {
-    
-  //   if (m_inSensorState.getBoolean(true) == true && getInSensorState() == false) {
-  //     m_ballCount.setDouble(m_ballCount.getDouble(0) + 1);
-  //   }
-    
-  //   /*
-  //   if (m_outSensorState.getBoolean(true) == true && getOutSensorState() == false) {
-  //     m_ballCount.setDouble(m_ballCount.getDouble(0) - 1);
-  //   }
-  //   */
-    
-  //   m_inSensorState.setBoolean(getInSensorState());
-  //   // m_shooterTab.add("Magazine output sensor state", getOutSensorState());
-  // }
-
   @Override
   public void periodic() {
-    // SmartDashboard.putBoolean("Magazine output sensor output", m_outSensor.get());
+    m_currentStateEntry.setString(m_currentState.name());
     m_inSensorState.setBoolean(m_inSensor.get());
     m_outSensorState.setBoolean(m_outSensor.get());
   }
