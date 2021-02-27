@@ -31,6 +31,9 @@ import frc.robot.commands.AutoDriveForewardCommand;
 import frc.robot.commands.AutoLeftCommand;
 import frc.robot.commands.AutoLeftCornerCommand;
 import frc.robot.commands.AutoMiddleCommand;
+import frc.robot.commands.AutoNavBarrelRacingCommand;
+import frc.robot.commands.AutoNavBounceCommand;
+import frc.robot.commands.AutoNavSlalomCommand;
 import frc.robot.commands.AutoRightCommand;
 import frc.robot.commands.AutoShootCommand;
 import frc.robot.commands.ClimberCommand;
@@ -84,6 +87,9 @@ public class RobotContainer {
   private final AutoRightCommand m_autoRight;
   private final AutoShootCommand m_autoShoot;
   private final AutoDriveForewardCommand m_autoMove;
+  private final AutoNavBounceCommand m_BouncePathCommand;
+  private final AutoNavSlalomCommand m_SlalomPathCommand;
+  private final AutoNavBarrelRacingCommand m_BarrelRacingPathCommand;
 
   // Controllers
   private final Joystick m_leftDriverController = new Joystick(OIConstants.kLeftDriverController);
@@ -127,6 +133,9 @@ public class RobotContainer {
     m_climbCommand = new ClimberCommand(m_climberSubsystem);
     m_singleFireCommand = new SingleFireCommandGroup(m_shooterSubsystem, m_magSubsystem, m_gathererSubsystem);
     m_controlShooterCommand = new ControlShooterCommand(m_shooterSubsystem);
+    m_BouncePathCommand = new AutoNavBounceCommand(m_driveTrain);
+    m_SlalomPathCommand = new AutoNavSlalomCommand(m_driveTrain);
+    m_BarrelRacingPathCommand = new AutoNavBarrelRacingCommand(m_driveTrain);
 
     // Instantiate Autonomous Commands
     m_AutoAimCommand = new AimCommand(m_driveTrain, m_gyroProvider, Robot::getCenterX);
@@ -262,15 +271,10 @@ public class RobotContainer {
 
     m_autonomousChooser = new SendableChooser<Command>();
     m_autonomousChooser.setDefaultOption("Example Path Drive", m_exampleDrive);
-    m_autonomousChooser.addOption("Far Left", m_autoLeftCorner);
-    m_autonomousChooser.addOption("Left", m_autoLeft);
-    m_autonomousChooser.addOption("Middle", m_autoMiddle);
-    //m_autonomousChooser.addOption("Right", m_autoRight);
+    m_autonomousChooser.addOption("Barrel Racing", m_BarrelRacingPathCommand);
+    m_autonomousChooser.addOption("Bounce Path", m_BouncePathCommand);
+    m_autonomousChooser.addOption("Slalom", m_SlalomPathCommand);
     m_autonomousChooser.addOption("Shoot", m_autoShoot);
-    m_autonomousChooser.addOption("Drive Foreward", m_autoMove);
-    m_autonomousChooser.addOption("Hold Place", new PrintCommand("Not doing anything for auton"));
-
-
     m_autonomousShuffleboardTab.add("Autonomous Chooser", m_autonomousChooser);
 
   }
