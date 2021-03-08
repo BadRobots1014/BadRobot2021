@@ -8,6 +8,7 @@
 package frc.robot.subsystems;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -38,6 +39,8 @@ public class MagazineSubsystem extends SubsystemBase {
   private BooleanSupplier m_shootTriggerSupplier = () -> false;
   private BooleanSupplier m_readyTriggerSupplier = () -> false;
 
+  private DoubleSupplier m_shooterVelocitySupplier = () -> 0.0;
+
   private MagazineState m_currentState = MagazineState.EMPTY;
   
   private final ShuffleboardTab m_shooterTab = Shuffleboard.getTab("Shooting");
@@ -51,7 +54,7 @@ public class MagazineSubsystem extends SubsystemBase {
                                                                  .withWidget(BuiltInWidgets.kTextView)
                                                                  .getEntry();
 
-  private final int kShootCycleResetTimeout = 10;
+  private final int kShootCycleResetTimeout = 5;
   
   /**
    * Creates a new MagazineSubsystem.
@@ -70,6 +73,10 @@ public class MagazineSubsystem extends SubsystemBase {
   public void setJoystickSupplier(BooleanSupplier shootTriggerSupplier, BooleanSupplier readyTriggerSupplier) {
     m_shootTriggerSupplier = shootTriggerSupplier;
     m_readyTriggerSupplier = readyTriggerSupplier;
+  }
+
+  public void setShooterVelocitySupplier(DoubleSupplier shooterVelocitySupplier) {
+    m_shooterVelocitySupplier = shooterVelocitySupplier;
   }
 
   public void runMotor() {
@@ -111,7 +118,7 @@ public class MagazineSubsystem extends SubsystemBase {
       case LOADED:
         stopMotor();
         if (!m_lastReadyTriggerState && currentReadyTriggerState) {
-          m_currentState = MagazineState.READY;
+          m_currentState = MagazineState.GOTO_READY;
         } else if (!m_lastOutSensorState && currentOutSensorState) {
           m_currentState = MagazineState.FULL;
         } else if (!m_lastInSensorState && currentInSensorState) {
@@ -129,10 +136,31 @@ public class MagazineSubsystem extends SubsystemBase {
           m_shootingTimer.start();
           m_currentState = MagazineState.SHOOT;
         } else if (!m_lastReadyTriggerState && currentReadyTriggerState) {
-          m_currentState = MagazineState.LOAD;
+          m_currentState = MagazineState.LOADED;
+        }
+        break;
+      case GOTO_READY:
+        if (!m_lastOutSensorState && currentOutSensorState) {
+          m_currentState = MagazineState.READY;
+        } else {
+          runMotor();
         }
         break;
       case SHOOT:
+        stopMotor();
+        if (m_lastShootTriggerState && !currentShootTriggerState) {
+          m_shootingTimer.stop();
+          if (m_shootingTimer.hasElapsed(kShootCycleResetTimeout)) {
+            m_currentState = MagazineState.EMPTY;
+          } else {
+            m_currentState = MagazineState.READY;
+          }
+        }
+        if (m_shooterVelocitySupplier.getAsDouble() > 10000) {
+          m_currentState = MagazineState.FIRE;
+        }
+        break;
+      case FIRE:
         runMotor();
         if (m_lastOutSensorState && !currentOutSensorState) {
           m_ballCountEntry.setNumber(m_ballCountEntry.getNumber(0).intValue() - 1);
@@ -145,7 +173,9 @@ public class MagazineSubsystem extends SubsystemBase {
             m_currentState = MagazineState.READY;
           }
         }
-        break;
+        if (m_shooterVelocitySupplier.getAsDouble() < 10000) {
+          m_currentState = MagazineState.SHOOT;
+        }
     }
 
     m_lastInSensorState = currentInSensorState;

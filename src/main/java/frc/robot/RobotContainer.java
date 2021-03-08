@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.AccessoryConstants;
@@ -143,8 +142,10 @@ public class RobotContainer {
     // Configure Default Commands
     m_driveTrain.setDefaultCommand(m_teleopDriveCommand); 
     m_shooterSubsystem.setDefaultCommand(m_controlShooterCommand);
-    m_magSubsystem.setDefaultCommand(new RunCommand(() -> m_magSubsystem.runAuto(), m_magSubsystem));
+    m_magSubsystem.setDefaultCommand(new RunCommand(m_magSubsystem::runAuto, m_magSubsystem));
     m_gathererSubsystem.setDefaultCommand(new RunGathererCommand(m_gathererSubsystem));
+
+    m_magSubsystem.setShooterVelocitySupplier(m_shooterSubsystem::getVelocity);
 
     // Configure Button Bindings
     configureButtonBindings();
@@ -175,13 +176,23 @@ public class RobotContainer {
 
   private void configureDriverControls() {
 
-    BooleanSupplier leftSlowSupplier = () -> new JoystickButton(m_leftDriverController, 1).get();
-    BooleanSupplier rightSlowSupplier = () -> new JoystickButton(m_rightDriverController, 1).get();
+    BooleanSupplier leftSlowSupplier = () -> new JoystickButton(m_leftDriverController, 3).get();
+    BooleanSupplier rightSlowSupplier = () -> new JoystickButton(m_rightDriverController, 3).get();
 
     DoubleSupplier leftSupplier = () -> -m_leftDriverController.getY();
     DoubleSupplier rightSupplier = () -> -m_rightDriverController.getY();
 
     m_teleopDriveCommand.setControllerSupplier(leftSupplier, rightSupplier, leftSlowSupplier, rightSlowSupplier);
+
+    BooleanSupplier shootSupplier = new JoystickButton(m_rightDriverController, 1)::get;
+
+    m_shooterSubsystem.setJoystickSupplier(shootSupplier);
+
+    BooleanSupplier magReadySupplier = new JoystickButton(m_rightDriverController, 2)::get;
+
+    m_magSubsystem.setJoystickSupplier(shootSupplier, magReadySupplier);
+
+    // Left stick: 1 Gather 2 Extend/Retract Gatherer
 
   }
 

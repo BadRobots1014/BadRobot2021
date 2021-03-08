@@ -26,9 +26,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private final TalonFX m_shooterMotor = new TalonFX(ShooterConstants.kShooterId);
   private final Servo m_hoodServo = new Servo(0);
-
-  public final double kDeadband = 0.05;
-  private DoubleSupplier m_joystickSupplier = () -> 0.0;
   private BooleanSupplier m_triggerSupplier = () -> false;
 
   private final ShuffleboardTab m_shooterTab = Shuffleboard.getTab("Shooting");
@@ -52,8 +49,7 @@ public class ShooterSubsystem extends SubsystemBase {
    * @param joystickSupplier Supplies the percent output the magazine motor runs at
    * @param triggerSupplier Supplies the boolean which determines whether or not the value from the joystick is passed
    */
-  public void setJoystickSupplier(DoubleSupplier joystickSupplier, BooleanSupplier triggerSupplier) {
-    m_joystickSupplier = joystickSupplier;
+  public void setJoystickSupplier(BooleanSupplier triggerSupplier) {
     m_triggerSupplier = triggerSupplier;
   }
   
@@ -71,9 +67,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void controlShooter() {
     if (m_triggerSupplier.getAsBoolean()) {
-      m_shooterMotor.set(TalonFXControlMode.PercentOutput, m_joystickSupplier.getAsDouble());
+      runShooter();
     } else {
-      m_shooterMotor.set(TalonFXControlMode.PercentOutput, 0);
+      m_shooterMotor.neutralOutput();
     }
   }
 
@@ -89,6 +85,10 @@ public class ShooterSubsystem extends SubsystemBase {
     m_velocityEntry.setDouble(m_shooterMotor.getSelectedSensorVelocity());
     m_currentEntry.setDouble(m_shooterMotor.getStatorCurrent());
     m_deltaVelocityEntry.setDouble(m_velocityEntry.getDouble(ShooterConstants.kDesiredAngularSpeed) - ShooterConstants.kDesiredAngularSpeed);
+  }
+
+  public double getVelocity() {
+    return m_velocityEntry.getDouble(0);
   }
 
   // Return the difference between the desired velocity and the current velocity

@@ -112,7 +112,9 @@ public final class Constants {
             LOADED,
             FULL,
             READY,
-            SHOOT
+            GOTO_READY,
+            SHOOT,
+            FIRE
         }
     }
 
