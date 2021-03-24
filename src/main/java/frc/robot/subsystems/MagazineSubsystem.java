@@ -91,6 +91,10 @@ public class MagazineSubsystem extends SubsystemBase {
     m_magazineMotor.set(ControlMode.PercentOutput, 0);
   }
 
+  public boolean isShootingAllowed() {
+    return (m_currentState == MagazineState.READY || m_currentState == MagazineState.SHOOT || m_currentState == MagazineState.FIRE);
+  }
+
   public void runAuto() {
     boolean currentInSensorState = m_inSensor.get();
     boolean currentOutSensorState = m_outSensor.get();

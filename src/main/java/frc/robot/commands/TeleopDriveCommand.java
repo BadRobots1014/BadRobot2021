@@ -33,7 +33,7 @@ public class TeleopDriveCommand extends CommandBase {
   private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(5);
 
   // Arcade Drive Stuff
-  public static final double kDefaultDeadband = 0.02;
+  public static final double kDefaultDeadband = 0.05;
   public static final double kDefaultMaxOutput = 1.0;
   private static final boolean kSquareInputs = true; 
 

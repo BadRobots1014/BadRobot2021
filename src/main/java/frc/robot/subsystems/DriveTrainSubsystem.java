@@ -47,8 +47,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
   private final GyroProvider m_gyro;
 
-  private final DifferentialDriveKinematics m_kinematics
-      = new DifferentialDriveKinematics(DriveConstants.kTrackWidth);
+  private final DifferentialDriveKinematics m_kinematics = new DifferentialDriveKinematics(DriveConstants.kTrackWidth);
 
   private final DifferentialDriveOdometry m_odometry;
 
