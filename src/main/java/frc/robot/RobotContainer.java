@@ -38,8 +38,10 @@ import frc.robot.commands.AutoRightCommand;
 import frc.robot.commands.AutoShootCommand;
 import frc.robot.commands.ClimberCommand;
 import frc.robot.commands.ControlShooterCommand;
+import frc.robot.commands.ExtendGathererCommand;
 import frc.robot.commands.RunGathererCommand;
 import frc.robot.commands.HoldPlaceCommand;
+import frc.robot.commands.RetractGathererCommand;
 import frc.robot.commands.RunShooterCommand;
 import frc.robot.commands.SingleFireCommandGroup;
 import frc.robot.commands.TeleopDriveCommand;
@@ -194,6 +196,13 @@ public class RobotContainer {
     m_magSubsystem.setJoystickSupplier(shootSupplier, magReadySupplier);
 
     // Left stick: 1 Gather 2 Extend/Retract Gatherer
+
+    new JoystickButton(m_leftDriverController, 1).whenPressed(m_gatherCommand);
+
+    new JoystickButton(m_leftDriverController, 2)
+    .whenPressed(new ConditionalCommand(new RetractGathererCommand(m_gathererSubsystem),
+                                        new ExtendGathererCommand(m_gathererSubsystem),
+                                        m_gathererSubsystem::isGathererOut));
 
   }
 
