@@ -27,7 +27,7 @@ public class AutoNavBarrelRacingCommand extends SequentialCommandGroup {
     //m_lights = lights;
     // Before starting, set the pose to 0, -3, because that's where the path starts in the Example that was created.
     addCommands( RamseteUtil.getRamseteCommandForPath("paths/BarrelRacing.wpilib.json", driveTrain)
-                .beforeStarting(() -> driveTrain.setPose(new Pose2d(3.007, -4.047, new Rotation2d(0))))
+                .beforeStarting(() -> driveTrain.setPose(new Pose2d(1.219893073040874, 2.0944329210803616, new Rotation2d(0.44024051355478006))))
                 .andThen(() -> driveTrain.stop())
     );
   }

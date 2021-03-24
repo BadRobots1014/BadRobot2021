@@ -27,7 +27,7 @@ public class AutoNavBounceCommand extends SequentialCommandGroup {
     //m_lights = lights;
     // Before starting, set the pose to 0, -3, because that's where the path starts in the Example that was created.
     addCommands( RamseteUtil.getRamseteCommandForPath("paths/Bounce.wpilib.json", driveTrain)
-                .beforeStarting(() -> driveTrain.setPose(new Pose2d(3.007, -4.047, new Rotation2d(0))))
+                .beforeStarting(() -> driveTrain.setPose(new Pose2d(1.2807482668737173, 2.276998502578892, new Rotation2d(-0.1746721990082404))))
                 .andThen(() -> driveTrain.stop())
     );
   }

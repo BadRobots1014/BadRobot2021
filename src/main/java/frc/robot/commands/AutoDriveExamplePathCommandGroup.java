@@ -7,12 +7,17 @@
 
 package frc.robot.commands;
 
+import java.util.ArrayList;
+
+import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.DriveTrainSubsystem;
-import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.util.RamseteUtil;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -22,21 +27,27 @@ public class AutoDriveExamplePathCommandGroup extends SequentialCommandGroup {
   /**
    * Creates a new AutoDriveCommandGroup.
    */
-  LEDSubsystem m_lights;
-  public AutoDriveExamplePathCommandGroup(DriveTrainSubsystem driveTrain) {    
-    //m_lights = lights;
-    // Before starting, set the pose to 0, -3, because that's where the path starts in the Example that was created.
-    addCommands(RamseteUtil.getRamseteCommandForPath("paths/Example.wpilib.json", driveTrain)
-                  .beforeStarting(() -> driveTrain.setPose(new Pose2d(0, -3, new Rotation2d(0))))
-                  .andThen(() -> driveTrain.stop()),
-                new PrintCommand("Finished Driving Path")
-                // RamseteUtil.getRamseteCommandForPath("paths/Example.wpilib.json", driveTrain)
-                // .andThen(() -> driveTrain.stop()),
-                // RamseteUtil.getRamseteCommandForPath("paths/Example.wpilib.json", driveTrain)
-                // .andThen(() -> driveTrain.stop()),
-                // RamseteUtil.getRamseteCommandForPath("paths/Example.wpilib.json", driveTrain)
-                // .andThen(() -> driveTrain.stop())
-    );
+  
+  ArrayList<Pose2d> waypoints = new ArrayList<Pose2d>();
+
+  public AutoDriveExamplePathCommandGroup(DriveTrainSubsystem driveTrain) { 
+    
+    
+    // waypoints.add(new Pose2d(0, 0, new Rotation2d()));
+    // waypoints.add(new Pose2d(1, 0, new Rotation2d()));
+
+    // TrajectoryConfig config = new TrajectoryConfig(1, 1);
+
+    // Trajectory trajectory = TrajectoryGenerator.generateTrajectory(waypoints, config);
+    
+    // addCommands(new RamseteCommand(trajectory, driveTrain::getPose, new RamseteController(), driveTrain.getDriveKinematics(), driveTrain::setSpeeds, driveTrain)
+    // .beforeStarting(() -> driveTrain.setPose(new Pose2d(0, 0, new Rotation2d())), driveTrain)
+    // .andThen(() -> System.out.println("Example Path Finished")));
+
+    addCommands(RamseteUtil.getRamseteCommandForPath("paths/StraightLine.wpilib.json", driveTrain)
+    .beforeStarting(() -> driveTrain.setPose(new Pose2d(0, 8.21055, new Rotation2d())))
+    .andThen(() -> System.out.println("Example Path Finished")));
+
   }
 
   // @Override
